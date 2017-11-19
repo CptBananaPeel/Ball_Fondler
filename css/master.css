@@ -1,0 +1,6 @@
+button {
+  background-color: rgba(200,200,200,0.8);
+  border-style: solid;
+  border-radius: 10px;
+  z-index: 99999;
+}

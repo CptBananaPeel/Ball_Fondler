@@ -1,5 +1,15 @@
 //  https://github.com/bmoren/p5.collide2D
 
+/*
+TODO:
+stuff i want to do:
+- want to make a popup for every 50/100 point made.
+- make it more colourfull and pretty to look at
+- maybe a sound option?
+- make buttons functional and pretty
+
+*/
+
 let playArea;
 let bubbles = [];
 let playerOne;
@@ -12,28 +22,55 @@ let highScore = localStorage.getItem('highScore');
 let startButton;
 let instructionButton;
 let highScoreResetter;
+let returnButton;
+let instructionText;
 
+
+let buttonOffset = document.getElementsByTagName('button')
+let instructionOffset = document.getElementsByTagName('p')
+
+//The following function runs a single time - setting up the game
 function setup() {
-  playArea = createCanvas(windowWidth-175, windowHeight-400);
+  noLoop()
+  playArea = createCanvas(windowWidth, windowHeight-100);
   centerCanvas();
   textSize(35);
 
   playerOne = new Player();
-  noLoop()
 
+
+
+// document.getElementsByTagName('button')[2].offsetWidth
+// document.getElementsByTagName('button')[2].offsetHeight
+// used above mentioned call to get width of the rendered item. to moved det others.
+
+  startButton = createButton("Start Game")
+  instructionButton = createButton("Instruction")
+  returnButton = createButton('Return')
+
+  instructionText = createP("This magnificent game is played using the arrowkeys. In order to score points you will need to dogdge the balls, come from each side of the screen.")
 
 
   //Start button
-  startButton = createElement("BUTTON", "Start Button")
-  document.getElementsByTagName("BUTTON")[0].addEventListener("click", newGame);
+              // width, height
+  startButton.size(160, 100)
+  startButton.mousePressed(newGame);
+  startButton.position(width/2 - (buttonOffset[0].offsetWidth/2) - 160, height/2);
 
   //Instruction button
-  instructionButton = createElement("BUTTON", "Instruction Button")
-  document.getElementsByTagName("BUTTON")[1].addEventListener("click", test);
+  instructionButton.size(160, 100)
+  instructionButton.mousePressed(instructions);
+  instructionButton.position(width/2 - (buttonOffset[1].offsetWidth/2) + 160, height/2);
 
-  //highScore resetter
-  highScoreResetter = createElement("BUTTON", "Reset your highscore")
-  document.getElementsByTagName("BUTTON")[2].addEventListener("click", Resetter);
+
+  returnButton.hide();
+  returnButton.size(60,20)
+  returnButton.position(width/2-buttonOffset[2].offsetWidth/2, height/2+100)
+  returnButton.mousePressed(returnFunction);
+
+  instructionText.hide();
+  instructionText.size(500,400);
+
 }
 
 
@@ -41,7 +78,6 @@ function setup() {
 
 function spawner(){
 
-//TODO: want to make a function that determine the propobility for a bubble to spawn, which increases as time goes on.
   let spawnScore = random(0,100)
   let targetScore = 100 - (pow(point+1, 0.3))
   if (spawnScore >= targetScore ) {
@@ -64,12 +100,17 @@ function gameEnd(){
     if(hit) {
       noLoop()
       noStroke()
-      text("Im sorry, but you lost the GAME!" + '\n' + "Refresh the page to start a new game", 100, height/2)
+      text("Im sorry, but you lost the GAME!", width/2-250, height/2-150)
 
       if (point > localStorage.getItem('highScore')) {
         localStorage.setItem('highScore', point);
         highScore = localStorage.getItem('highScore')
       }
+
+      select('button').html('Retry the game')
+
+      startButton.show()
+      instructionButton.show()
 
     }
   }
@@ -120,10 +161,7 @@ function centerCanvas() {
   playArea.position(x, y);
 }
 
-function windowResized() {
-  centerCanvas();
-  resizeCanvas(windowWidth-175, windowHeight-400)
-}
+
 
 function newGame() {
   playerOne.position.x = width/2;
@@ -132,12 +170,36 @@ function newGame() {
   hit = false;
   point = 0;
   loop()
+
+  for (let i = 0; i < selectAll('button').length; i++){
+    selectAll('button')[i].hide();
+  }
+
 }
 
-function test () {
-  print("this is to write some instructions at some point")
+function instructions () {
+  for (let i = 0; i < selectAll('button').length; i++){
+    selectAll('button')[i].hide();
+  }
+
+
+
+  returnButton.show()
+  instructionText.show();
+
+  instructionText.position(width/2-instructionOffset[0].offsetWidth/2, height/2)
 }
 
+
+function returnFunction() {
+  returnButton.hide()
+  instructionText.hide()
+  startButton.show()
+  instructionButton.show()
+}
+
+
+//Function is not yet it use - used to delete highscore
 function Resetter() {
   localStorage.removeItem('highScore')
   print(localStorage.getItem('highScore'))
