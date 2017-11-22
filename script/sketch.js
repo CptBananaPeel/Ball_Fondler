@@ -6,16 +6,19 @@ stuff i want to do:
 - want to make a popup for every 50/100 point made.
 - make it more colourfull and pretty to look at
 - maybe a sound option?
-- make buttons functional and pretty
+- try and use json as a way to store highscores. for a global highScore
 
 */
+
+//VERY IMPORTANT for performance!!
+p5.disableFriendlyErrors = true;
 
 let playArea;
 let bubbles = [];
 let playerOne;
 let point = 0;
 let hit = false;
-let bubbleLength = 1;
+
 let highScore = localStorage.getItem('highScore');
 
 //Buttons
@@ -31,24 +34,17 @@ let instructionOffset = document.getElementsByTagName('p')
 
 //The following function runs a single time - setting up the game
 function setup() {
-  noLoop()
   playArea = createCanvas(windowWidth, windowHeight-100);
   centerCanvas();
   textSize(35);
 
   playerOne = new Player();
 
-
-
-// document.getElementsByTagName('button')[2].offsetWidth
-// document.getElementsByTagName('button')[2].offsetHeight
-// used above mentioned call to get width of the rendered item. to moved det others.
-
   startButton = createButton("Start Game")
   instructionButton = createButton("Instruction")
   returnButton = createButton('Return')
 
-  instructionText = createP("This magnificent game is played using the arrowkeys. In order to score points you will need to dogdge the balls, come from each side of the screen.")
+  instructionText = createP("This magnificent game is played using the left and right arrowkeys. In order to score points you will need to dodge the balls, that comes from each side of the screen.")
 
 
   //Start button
@@ -70,6 +66,7 @@ function setup() {
 
   instructionText.hide();
   instructionText.size(500,400);
+  noLoop()
 
 }
 
@@ -78,10 +75,10 @@ function setup() {
 
 function spawner(){
 
-  let spawnScore = random(0,100)
-  let targetScore = 100 - (pow(point+1, 0.3))
+  let spawnScore = random(0,1)
+  let targetScore = 0.95      //100 - (pow(point+1, 0.3))
   if (spawnScore >= targetScore ) {
-    print("spawned with a spawnScore of: " + spawnScore + "\n" + "by beating: " + targetScore  + "\n" + "#BubbleSpawned: " + bubbleLength)
+    // print("spawned with a spawnScore of: " + spawnScore + "\n" + "by beating: " + targetScore  + "\n" + "#BubbleSpawned: " + bubbleLength)
     let w = random(30,50);
     let speed = random(1.5,5);
     let yaxis = 0 //random(1,10)
@@ -89,7 +86,6 @@ function spawner(){
     bubble = new Bubble(w, speed, yaxis);
     bubbles.push(bubble)
 
-    bubbleLength++
   }
 }
 
@@ -106,7 +102,6 @@ function gameEnd(){
         localStorage.setItem('highScore', point);
         highScore = localStorage.getItem('highScore')
       }
-
       select('button').html('Retry the game')
 
       startButton.show()
@@ -118,19 +113,24 @@ function gameEnd(){
 
 
 function draw() {
+  // print(bubbles.length)
+  // print("framerate: " + frameRate())
+
   background(150)
 
-  noStroke()
   //Writing point to screen
+  noStroke()
   text("Points: " + point, 10, 50);
 
   //Writing your highscore to screen
   text('Your highest score is: ' + highScore, width - 410, 50)
 
   spawner();
+  gameEnd()
+
+
   for (let i = 0; i < bubbles.length; i++) {
     let gravity = createVector(0, 0.002*bubbles[i].mass)
-
     bubbles[i].show();
     bubbles[i].move();
     bubbles[i].applyForce(gravity);
@@ -142,14 +142,11 @@ function draw() {
     if (bubbles[j].outOfBound()) {
       bubbles.splice(j, 1)
       point++
-
     }
   }
 
   playerOne.show();
   playerOne.move();
-
-  gameEnd()
 
 }
 
@@ -166,7 +163,7 @@ function centerCanvas() {
 function newGame() {
   playerOne.position.x = width/2;
   bubbles = [];
-  bubbleLength = 1;
+
   hit = false;
   point = 0;
   loop()
