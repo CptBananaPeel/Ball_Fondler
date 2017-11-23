@@ -8,6 +8,7 @@ stuff i want to do:
 - maybe a sound option?
 - try and use json as a way to store highscores. for a global highScore
 
+- In spawner use time instead of point for the use to spawn bubbles..
 */
 
 //VERY IMPORTANT for performance!!
@@ -71,17 +72,14 @@ function setup() {
 }
 
 
-
-
 function spawner(){
 
-  let spawnScore = random(0,1)
-  let targetScore = 0.95      //100 - (pow(point+1, 0.3))
+  let spawnScore = random(0,100)
+  let targetScore = 100 - (pow(point+1, 0.3))
   if (spawnScore >= targetScore ) {
-    // print("spawned with a spawnScore of: " + spawnScore + "\n" + "by beating: " + targetScore  + "\n" + "#BubbleSpawned: " + bubbleLength)
     let w = random(30,50);
     let speed = random(1.5,5);
-    let yaxis = 0 //random(1,10)
+    let yaxis = 0
 
     bubble = new Bubble(w, speed, yaxis);
     bubbles.push(bubble)
@@ -113,21 +111,16 @@ function gameEnd(){
 
 
 function draw() {
-  // print(bubbles.length)
-  // print("framerate: " + frameRate())
 
   background(150)
-
-  //Writing point to screen
   noStroke()
-  text("Points: " + point, 10, 50);
 
-  //Writing your highscore to screen
+  text("Points: " + point, 10, 50);
   text('Your highest score is: ' + highScore, width - 410, 50)
+
 
   spawner();
   gameEnd()
-
 
   for (let i = 0; i < bubbles.length; i++) {
     let gravity = createVector(0, 0.002*bubbles[i].mass)
@@ -137,7 +130,6 @@ function draw() {
     bubbles[i].edgeCheck();
   }
 
-// used for the removal of bubbles.
   for (let j = bubbles.length-1; j >= 0; j--) {
     if (bubbles[j].outOfBound()) {
       bubbles.splice(j, 1)
@@ -147,7 +139,6 @@ function draw() {
 
   playerOne.show();
   playerOne.move();
-
 }
 
 
@@ -178,9 +169,6 @@ function instructions () {
   for (let i = 0; i < selectAll('button').length; i++){
     selectAll('button')[i].hide();
   }
-
-
-
   returnButton.show()
   instructionText.show();
 
